@@ -1,0 +1,2855 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users Analytics | DataViz Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* ===== RESET & BASE STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Light Theme Colors */
+            --primary: #3b82f6;
+            --primary-light: #60a5fa;
+            --primary-dark: #2563eb;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --purple: #8b5cf6;
+            --pink: #ec4899;
+            --cyan: #06b6d4;
+
+            --bg-primary: #f9fafb;
+            --bg-secondary: #ffffff;
+            --bg-sidebar: #1f2937;
+            --bg-card: #ffffff;
+            --bg-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-light: #9ca3af;
+
+            --border-color: #e5e7eb;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-blue: 0 10px 15px -3px rgba(59, 130, 246, 0.2);
+
+            --radius: 0.75rem;
+            --radius-sm: 0.5rem;
+            --radius-lg: 1rem;
+            --transition: all 0.3s ease;
+        }
+
+        .dark-theme {
+            /* Dark Theme Colors */
+            --primary: #60a5fa;
+            --primary-light: #93c5fd;
+            --primary-dark: #3b82f6;
+
+            --bg-primary: #111827;
+            --bg-secondary: #1f2937;
+            --bg-sidebar: #0f172a;
+            --bg-card: #1f2937;
+            --bg-gradient: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --text-light: #9ca3af;
+
+            --border-color: #374151;
+            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            --shadow-blue: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: var(--transition);
+            line-height: 1.5;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== THEME TOGGLE ===== */
+        .theme-toggle {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+
+        .theme-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            z-index: 1001;
+        }
+
+        .theme-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-blue);
+        }
+
+        /* ===== LAYOUT ===== */
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 250px;
+            background: var(--bg-sidebar);
+            color: white;
+            padding: 1.5rem 0;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            transition: var(--transition);
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: var(--primary-light);
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav-menu {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .nav-menu ul {
+            list-style: none;
+        }
+
+        .nav-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-light);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+
+        .nav-menu a:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-menu li.active a {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--primary);
+        }
+
+        .nav-menu i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .user-profile {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-profile h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .user-profile p {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header h2 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            background: var(--bg-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            min-width: 250px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: var(--shadow-blue);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notification-btn {
+            position: relative;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-primary);
+            transition: var(--transition);
+            display: none;
+        }
+
+        .notification-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.75rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .date-filter select {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .date-filter select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .user-action-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .user-action-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-blue);
+        }
+
+        /* ===== USERS HERO ===== */
+        .users-hero {
+            background: var(--bg-gradient);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            box-shadow: var(--shadow-blue);
+        }
+
+        .hero-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-content p {
+            opacity: 0.9;
+            margin-bottom: 1rem;
+            max-width: 500px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .hero-label {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        /* ===== USER METRICS ===== */
+        .user-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary);
+        }
+
+        .metric-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.25rem;
+        }
+
+        .icon-users {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+        }
+
+        .icon-active {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
+        }
+
+        .icon-growth {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .icon-engagement {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--purple);
+        }
+
+        .metric-card h3 {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-change {
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+        }
+
+        .metric-change.positive {
+            color: var(--secondary);
+        }
+
+        .metric-change.negative {
+            color: var(--danger);
+        }
+
+        /* ===== CHARTS SECTION ===== */
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-container {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .chart-container:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-header h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-header h3 i {
+            color: var(--primary);
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chart-btn {
+            padding: 0.25rem 0.75rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .chart-btn:hover,
+        .chart-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .chart-wrapper {
+            height: 300px;
+            position: relative;
+        }
+
+        /* ===== USER SEGMENTS ===== */
+        .segments-section {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .segments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .segment-card {
+            padding: 1.5rem;
+            border-radius: var(--radius-sm);
+            background: var(--bg-primary);
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+
+        .segment-card:hover {
+            transform: translateX(5px);
+            background: var(--bg-card);
+        }
+
+        .segment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .segment-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .segment-count {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .segment-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+        }
+
+        .segment-stat .value {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .segment-stat .label {
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+        }
+
+        /* ===== USER ACTIVITY TABLE ===== */
+        .activity-section {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .table-filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        thead {
+            background: var(--bg-primary);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.875rem;
+        }
+
+        tbody tr {
+            transition: var(--transition);
+        }
+
+        tbody tr:hover {
+            background: var(--bg-primary);
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-info h4 {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .user-info p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status.active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status.inactive {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+
+        .status.new {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status.vip {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .activity-type {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* ===== GEOGRAPHIC DISTRIBUTION ===== */
+        .geo-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .geo-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .geo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .geo-header h4 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .geo-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .geo-stat .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .geo-stat .label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .geo-list {
+            margin-top: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .geo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .geo-item:last-child {
+            border-bottom: none;
+        }
+
+        .country {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .country-flag {
+            width: 24px;
+            height: 16px;
+            border-radius: 2px;
+            object-fit: cover;
+        }
+
+        .users-count {
+            font-weight: 600;
+        }
+
+        /* ===== DEVICE ANALYTICS ===== */
+        .device-analytics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .device-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .device-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .device-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .device-mobile {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+        }
+
+        .device-desktop {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
+        }
+
+        .device-tablet {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .device-info h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .device-info p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .device-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .device-metric .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .device-metric .label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== USER RETENTION ===== */
+        .retention-section {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .retention-stages {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .retention-stage {
+            text-align: center;
+        }
+
+        .stage-indicator {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+            position: relative;
+        }
+
+        .stage-indicator::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: calc(100% + 1.5rem);
+            height: 2px;
+            background: var(--border-color);
+            z-index: 1;
+        }
+
+        .retention-stage:last-child .stage-indicator::after {
+            display: none;
+        }
+
+        .stage-signup {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+        }
+
+        .stage-onboarding {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--purple);
+        }
+
+        .stage-activated {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .stage-engaged {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
+        }
+
+        .stage-retained {
+            background: var(--primary);
+            color: white;
+        }
+
+        .stage-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+
+        .stage-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== TOP USERS ===== */
+        .top-users-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .top-users-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .top-user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .top-user:last-child {
+            border-bottom: none;
+        }
+
+        .user-rank {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .rank-1 {
+            background: var(--primary);
+            color: white;
+        }
+
+        .rank-2 {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .rank-3 {
+            background: var(--warning);
+            color: white;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-email {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .user-stats {
+            text-align: right;
+        }
+
+        .user-value {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .logo h1,
+            .nav-menu span,
+            .user-profile div {
+                display: none;
+            }
+
+            .logo {
+                justify-content: center;
+                padding: 0 0 2rem;
+            }
+
+            .nav-menu a {
+                justify-content: center;
+                padding: 0.75rem;
+            }
+
+            .user-profile {
+                justify-content: center;
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 1rem;
+            }
+
+            .logo {
+                padding: 0;
+                border-bottom: none;
+            }
+
+            .nav-menu {
+                padding: 0;
+            }
+
+            .nav-menu ul {
+                display: flex;
+                gap: 1rem;
+            }
+
+            .nav-menu a {
+                border-left: none;
+                border-bottom: 3px solid transparent;
+            }
+
+            .nav-menu li.active a {
+                border-left: none;
+                border-bottom-color: var(--primary);
+            }
+
+            .user-profile {
+                padding: 0;
+                border-top: none;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .charts-section,
+            .segments-grid,
+            .geo-section,
+            .device-analytics,
+            .top-users-section {
+                grid-template-columns: 1fr;
+            }
+
+            .user-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-right {
+                width: 100%;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+
+            .users-hero {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .retention-stages {
+                grid-template-columns: 1fr;
+            }
+
+            .stage-indicator::after {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .user-metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .device-metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .geo-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-menu ul {
+                gap: 0.5rem;
+            }
+
+            .nav-menu a {
+                padding: 0.5rem;
+            }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .updated {
+            animation: pulse 1s;
+        }
+
+        .fa-spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        .segment-card {
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* ===== NOTIFICATION TOAST ===== */
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1rem;
+            box-shadow: var(--shadow-xl);
+            z-index: 10000;
+            max-width: 300px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .toast-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .toast-close {
+            margin-left: auto;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+
+        .toast-body {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <button id="themeBtn" class="theme-btn">
+            <i class="fas fa-moon"></i>
+            <span>Dark Mode</span>
+        </button>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <h1>DataViz Pro</h1>
+            </div>
+
+            <nav class="nav-menu">
+                <ul>
+                    <li>
+                        <a href="index.html">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Analytics.html">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Analytics</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Marketing.html">
+                            <i class="fas fa-bullhorn"></i>
+                            <span>Marketing</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Sales.html">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Sales</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="Users.html">
+                            <i class="fas fa-users"></i>
+                            <span>Users</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="user-profile">
+                <img src="https://ui-avatars.com/api/?name=User+Analyst&background=3b82f6&color=fff" alt="User">
+                <div>
+                    <h3>Alex Johnson</h3>
+                    <p>User Analyst</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="users">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h2>Users Analytics</h2>
+                    <p class="subtitle">Track user behavior, engagement, and growth metrics</p>
+                </div>
+
+                <div class="header-right">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search users, activities..." id="searchInput">
+                    </div>
+
+                    <div class="header-actions">
+                        <button class="notification-btn" id="notificationBtn">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge" id="notificationBadge">2</span>
+                        </button>
+
+                        <div class="date-filter">
+                            <select id="dateRange">
+                                <option value="today">Today</option>
+                                <option value="week">This Week</option>
+                                <option value="month" selected>This Month</option>
+                                <option value="quarter">This Quarter</option>
+                                <option value="year">This Year</option>
+                            </select>
+                        </div>
+
+                        <button class="user-action-btn" id="addUserBtn">
+                            <i class="fas fa-user-plus"></i>
+                            Add User
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Users Hero -->
+            <section class="users-hero">
+                <div class="hero-content">
+                    <h3>User Growth Overview</h3>
+                    <p>Monthly active users increased by 24% this quarter. Engagement rate at all-time high of 42%.</p>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-value">28.4K</div>
+                        <div class="hero-label">Total Users</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-value">8.2K</div>
+                        <div class="hero-label">Active Users</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-value">42%</div>
+                        <div class="hero-label">Engagement Rate</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- User Metrics -->
+            <section class="user-metrics">
+                <div class="metric-card">
+                    <div class="metric-icon icon-users">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Total Users</h3>
+                    <div class="value" id="totalUsersValue">28,412</div>
+                    <div class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>12.5% from last month</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon icon-active">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <h3>Active Users</h3>
+                    <div class="value" id="activeUsersValue">8,245</div>
+                    <div class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>8.2% from last month</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon icon-growth">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Growth Rate</h3>
+                    <div class="value" id="growthRateValue">18.7%</div>
+                    <div class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>3.1% from last month</span>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon icon-engagement">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3>Engagement</h3>
+                    <div class="value" id="engagementValue">42%</div>
+                    <div class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>5.4% from last month</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <!-- User Growth Chart -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-line"></i> User Growth Trend</h3>
+                        <div class="chart-actions">
+                            <button class="chart-btn active" data-metric="users">Users</button>
+                            <button class="chart-btn" data-metric="sessions">Sessions</button>
+                            <button class="chart-btn" data-metric="engagement">Engagement</button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="growthChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- User Distribution -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-chart-pie"></i> User Distribution</h3>
+                        <div class="chart-actions">
+                            <button class="chart-btn active" data-metric="region">By Region</button>
+                            <button class="chart-btn" data-metric="device">By Device</button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="distributionChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- User Segments -->
+            <section class="segments-section">
+                <div class="section-header">
+                    <h3>User Segments</h3>
+                    <button class="user-action-btn" id="segmentAnalysisBtn">
+                        <i class="fas fa-filter"></i>
+                        Analyze Segments
+                    </button>
+                </div>
+                <div class="segments-grid" id="segmentsGrid">
+                    <!-- Segments will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- User Activity Table -->
+            <section class="activity-section">
+                <div class="table-filters">
+                    <div class="filter-group">
+                        <button class="filter-btn active" data-status="all">
+                            <i class="fas fa-list"></i>
+                            All Users
+                        </button>
+                        <button class="filter-btn" data-status="active">
+                            <i class="fas fa-user-check"></i>
+                            Active
+                        </button>
+                        <button class="filter-btn" data-status="new">
+                            <i class="fas fa-star"></i>
+                            New Users
+                        </button>
+                        <button class="filter-btn" data-status="vip">
+                            <i class="fas fa-crown"></i>
+                            VIP Users
+                        </button>
+                    </div>
+
+                    <button class="user-action-btn" style="background: var(--purple);" id="exportUsersBtn">
+                        <i class="fas fa-download"></i>
+                        Export Data
+                    </button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Status</th>
+                                <th>Last Active</th>
+                                <th>Activity</th>
+                                <th>Sessions</th>
+                                <th>Engagement</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Users will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Geographic Distribution -->
+            <section class="geo-section">
+                <div class="geo-card">
+                    <div class="geo-header">
+                        <h4>Top Countries</h4>
+                        <span class="metric-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            15.2% growth
+                        </span>
+                    </div>
+                    <div class="geo-stats">
+                        <div class="geo-stat">
+                            <div class="value">42%</div>
+                            <div class="label">USA Users</div>
+                        </div>
+                        <div class="geo-stat">
+                            <div class="value">18%</div>
+                            <div class="label">UK Users</div>
+                        </div>
+                    </div>
+                    <div class="geo-list">
+                        <!-- Countries will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="geo-card">
+                    <div class="geo-header">
+                        <h4>Regional Engagement</h4>
+                        <span class="metric-change positive">
+                            <i class="fas fa-arrow-up"></i>
+                            8.7% increase
+                        </span>
+                    </div>
+                    <div class="geo-stats">
+                        <div class="geo-stat">
+                            <div class="value">38%</div>
+                            <div class="label">North America</div>
+                        </div>
+                        <div class="geo-stat">
+                            <div class="value">29%</div>
+                            <div class="label">Europe</div>
+                        </div>
+                    </div>
+                    <div id="regionalEngagement">
+                        <!-- Regional engagement will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Device Analytics -->
+            <section class="device-analytics">
+                <div class="device-card">
+                    <div class="device-header">
+                        <div class="device-icon device-mobile">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <div class="device-info">
+                            <h4>Mobile Users</h4>
+                            <p>Smartphones & Tablets</p>
+                        </div>
+                    </div>
+                    <div class="device-metrics">
+                        <div class="device-metric">
+                            <div class="value">62%</div>
+                            <div class="label">of Users</div>
+                        </div>
+                        <div class="device-metric">
+                            <div class="value">3.2</div>
+                            <div class="label">Avg. Sessions</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="device-card">
+                    <div class="device-header">
+                        <div class="device-icon device-desktop">
+                            <i class="fas fa-desktop"></i>
+                        </div>
+                        <div class="device-info">
+                            <h4>Desktop Users</h4>
+                            <p>Computers & Laptops</p>
+                        </div>
+                    </div>
+                    <div class="device-metrics">
+                        <div class="device-metric">
+                            <div class="value">35%</div>
+                            <div class="label">of Users</div>
+                        </div>
+                        <div class="device-metric">
+                            <div class="value">4.8</div>
+                            <div class="label">Avg. Sessions</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="device-card">
+                    <div class="device-header">
+                        <div class="device-icon device-tablet">
+                            <i class="fas fa-tablet-alt"></i>
+                        </div>
+                        <div class="device-info">
+                            <h4>Tablet Users</h4>
+                            <p>iPad & Android Tablets</p>
+                        </div>
+                    </div>
+                    <div class="device-metrics">
+                        <div class="device-metric">
+                            <div class="value">3%</div>
+                            <div class="label">of Users</div>
+                        </div>
+                        <div class="device-metric">
+                            <div class="value">2.4</div>
+                            <div class="label">Avg. Sessions</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- User Retention -->
+            <section class="retention-section">
+                <div class="section-header">
+                    <h3>User Retention Funnel</h3>
+                    <span class="metric-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        Overall Retention: 68%
+                    </span>
+                </div>
+                <div class="retention-stages">
+                    <div class="retention-stage">
+                        <div class="stage-indicator stage-signup">2,850</div>
+                        <div class="stage-value">100%</div>
+                        <div class="stage-label">Signups</div>
+                    </div>
+
+                    <div class="retention-stage">
+                        <div class="stage-indicator stage-onboarding">2,142</div>
+                        <div class="stage-value">75%</div>
+                        <div class="stage-label">Onboarded</div>
+                    </div>
+
+                    <div class="retention-stage">
+                        <div class="stage-indicator stage-activated">1,712</div>
+                        <div class="stage-value">60%</div>
+                        <div class="stage-label">Activated</div>
+                    </div>
+
+                    <div class="retention-stage">
+                        <div class="stage-indicator stage-engaged">1,283</div>
+                        <div class="stage-value">45%</div>
+                        <div class="stage-label">Engaged</div>
+                    </div>
+
+                    <div class="retention-stage">
+                        <div class="stage-indicator stage-retained">1,938</div>
+                        <div class="stage-value">68%</div>
+                        <div class="stage-label">Retained</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Top Users -->
+            <section class="top-users-section">
+                <div class="top-users-card">
+                    <h3 style="margin-bottom: 1rem;">Most Active Users</h3>
+                    <div id="mostActiveUsers">
+                        <!-- Most active users will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="top-users-card">
+                    <h3 style="margin-bottom: 1rem;">Highest Value Users</h3>
+                    <div id="highestValueUsers">
+                        <!-- Highest value users will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // ===== USERS DATA =====
+        const usersData = {
+            growthTrend: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                users: [18500, 19200, 20100, 21500, 22800, 24200, 25600, 26800, 27400, 28100, 28412, 28900],
+                sessions: [42500, 43800, 45200, 46800, 48500, 51200, 52800, 54200, 55800, 57200, 58800, 59800],
+                engagement: [38, 39, 40, 41, 42, 43, 44, 42, 41, 42, 42, 43]
+            },
+
+            distribution: {
+                labels: ['North America', 'Europe', 'Asia', 'South America', 'Africa', 'Oceania'],
+                data: [42, 28, 18, 8, 3, 1],
+                colors: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4']
+            },
+
+            segments: [
+                { id: 1, name: "Power Users", count: "2,850", growth: "+24%", sessions: "12.4", engagement: "68%" },
+                { id: 2, name: "Regular Users", count: "8,420", growth: "+12%", sessions: "4.8", engagement: "42%" },
+                { id: 3, name: "New Users", count: "1,240", growth: "+18%", sessions: "2.1", engagement: "28%" },
+                { id: 4, name: "At Risk", count: "850", growth: "-8%", sessions: "1.2", engagement: "15%" },
+                { id: 5, name: "VIP Users", count: "420", growth: "+32%", sessions: "18.6", engagement: "82%" },
+                { id: 6, name: "Inactive", count: "1,450", growth: "-15%", sessions: "0.4", engagement: "5%" }
+            ],
+
+            userActivity: [
+                { id: 1, name: "Alex Chen", email: "alex@email.com", status: "active", lastActive: "2 hours ago", activity: "Purchased Item", sessions: 42, engagement: "92%" },
+                { id: 2, name: "Maria Garcia", email: "maria@email.com", status: "active", lastActive: "5 hours ago", activity: "Viewed Profile", sessions: 38, engagement: "88%" },
+                { id: 3, name: "John Smith", email: "john@email.com", status: "new", lastActive: "1 day ago", activity: "Signed Up", sessions: 3, engagement: "45%" },
+                { id: 4, name: "Sarah Wilson", email: "sarah@email.com", status: "vip", lastActive: "3 hours ago", activity: "Premium Upgrade", sessions: 156, engagement: "98%" },
+                { id: 5, name: "David Kim", email: "david@email.com", status: "active", lastActive: "8 hours ago", activity: "Posted Review", sessions: 24, engagement: "78%" },
+                { id: 6, name: "Lisa Brown", email: "lisa@email.com", status: "active", lastActive: "12 hours ago", activity: "Shared Content", sessions: 18, engagement: "72%" },
+                { id: 7, name: "Michael Lee", email: "michael@email.com", status: "new", lastActive: "2 days ago", activity: "Completed Onboarding", sessions: 5, engagement: "52%" },
+                { id: 8, name: "Emma Davis", email: "emma@email.com", status: "vip", lastActive: "1 hour ago", activity: "Referred Friend", sessions: 89, engagement: "95%" },
+                { id: 9, name: "James Wilson", email: "james@email.com", status: "active", lastActive: "6 hours ago", activity: "Updated Settings", sessions: 31, engagement: "82%" },
+                { id: 10, name: "Olivia Martin", email: "olivia@email.com", status: "active", lastActive: "4 hours ago", activity: "Downloaded App", sessions: 27, engagement: "76%" }
+            ],
+
+            countries: [
+                { name: "United States", code: "US", users: 11850, growth: 15 },
+                { name: "United Kingdom", code: "GB", users: 5120, growth: 12 },
+                { name: "Canada", code: "CA", users: 3850, growth: 18 },
+                { name: "Germany", code: "DE", users: 3420, growth: 10 },
+                { name: "Australia", code: "AU", users: 2850, growth: 22 },
+                { name: "France", code: "FR", users: 2640, growth: 8 },
+                { name: "Japan", code: "JP", users: 1980, growth: 14 },
+                { name: "India", code: "IN", users: 1750, growth: 32 }
+            ],
+
+            topActiveUsers: [
+                { name: "Sarah Wilson", email: "sarah@email.com", sessions: 156, engagement: "98%", value: "$2,850" },
+                { name: "Emma Davis", email: "emma@email.com", sessions: 89, engagement: "95%", value: "$1,980" },
+                { name: "Alex Chen", email: "alex@email.com", sessions: 42, engagement: "92%", value: "$1,240" },
+                { name: "Maria Garcia", email: "maria@email.com", sessions: 38, engagement: "88%", value: "$980" },
+                { name: "James Wilson", email: "james@email.com", sessions: 31, engagement: "82%", value: "$850" }
+            ],
+
+            topValueUsers: [
+                { name: "Sarah Wilson", email: "sarah@email.com", value: "$2,850", purchases: 24, joined: "2023-08-15" },
+                { name: "Robert Johnson", email: "robert@email.com", value: "$2,150", purchases: 18, joined: "2023-06-22" },
+                { name: "Emma Davis", email: "emma@email.com", value: "$1,980", purchases: 15, joined: "2023-09-10" },
+                { name: "Michael Brown", email: "michael@email.com", value: "$1,650", purchases: 12, joined: "2023-07-05" },
+                { name: "Alex Chen", email: "alex@email.com", value: "$1,240", purchases: 8, joined: "2023-10-18" }
+            ],
+
+            userMetrics: {
+                totalUsers: 28412,
+                activeUsers: 8245,
+                growthRate: 18.7,
+                engagement: 42
+            }
+        };
+
+        // ===== DASHBOARD INITIALIZATION =====
+        document.addEventListener('DOMContentLoaded', function () {
+            initializeTheme();
+            initializeCharts();
+            initializeSegments();
+            initializeUsersTable();
+            initializeCountries();
+            initializeTopUsers();
+            initializeEventListeners();
+            initializeRealTimeUpdates();
+        });
+
+        // ===== THEME MANAGEMENT =====
+        function initializeTheme() {
+            const themeBtn = document.getElementById('themeBtn');
+            const themeIcon = themeBtn.querySelector('i');
+            const themeText = themeBtn.querySelector('span');
+
+            const savedTheme = localStorage.getItem('usersTheme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.body.classList.add('dark-theme');
+                themeIcon.className = 'fas fa-sun';
+                themeText.textContent = 'Light Mode';
+            }
+
+            themeBtn.addEventListener('click', () => {
+                document.body.classList.toggle('dark-theme');
+
+                if (document.body.classList.contains('dark-theme')) {
+                    themeIcon.className = 'fas fa-sun';
+                    themeText.textContent = 'Light Mode';
+                    localStorage.setItem('usersTheme', 'dark');
+                } else {
+                    themeIcon.className = 'fas fa-moon';
+                    themeText.textContent = 'Dark Mode';
+                    localStorage.setItem('usersTheme', 'light');
+                }
+            });
+        }
+
+        // ===== CHARTS INITIALIZATION =====
+        function initializeCharts() {
+            // Growth Chart
+            const growthCtx = document.getElementById('growthChart');
+            if (growthCtx) {
+                window.growthChart = new Chart(growthCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: usersData.growthTrend.labels,
+                        datasets: [{
+                            label: 'Total Users',
+                            data: usersData.growthTrend.users,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: getLineChartOptions('', 'Users')
+                });
+            }
+
+            // Distribution Chart
+            const distributionCtx = document.getElementById('distributionChart');
+            if (distributionCtx) {
+                window.distributionChart = new Chart(distributionCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: usersData.distribution.labels,
+                        datasets: [{
+                            data: usersData.distribution.data,
+                            backgroundColor: usersData.distribution.colors,
+                            borderWidth: 1,
+                            borderColor: 'var(--bg-card)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true,
+                                    color: 'var(--text-primary)',
+                                    font: {
+                                        size: 11
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return `${context.label}: ${context.parsed}%`;
+                                    }
+                                }
+                            }
+                        },
+                        cutout: '65%'
+                    }
+                });
+            }
+        }
+
+        // ===== CHART OPTIONS =====
+        function getLineChartOptions(prefix = '', metric = '') {
+            return {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'var(--bg-card)',
+                        titleColor: 'var(--text-primary)',
+                        bodyColor: 'var(--text-primary)',
+                        borderColor: 'var(--border-color)',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function (context) {
+                                if (metric === 'engagement') {
+                                    return `${context.dataset.label}: ${context.parsed.y}%`;
+                                }
+                                return `${context.dataset.label}: ${prefix}${context.parsed.y.toLocaleString()}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                        ticks: {
+                            color: 'var(--text-secondary)',
+                            callback: function (value) {
+                                if (metric === 'engagement') {
+                                    return value + '%';
+                                }
+                                return prefix + value.toLocaleString();
+                            }
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: 'var(--text-secondary)' }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            };
+        }
+
+        // ===== SEGMENTS INITIALIZATION =====
+        function initializeSegments() {
+            const segmentsGrid = document.getElementById('segmentsGrid');
+            if (!segmentsGrid) return;
+
+            segmentsGrid.innerHTML = '';
+
+            usersData.segments.forEach(segment => {
+                const segmentCard = document.createElement('div');
+                segmentCard.className = 'segment-card';
+                segmentCard.dataset.id = segment.id;
+
+                const growthClass = segment.growth.startsWith('+') ? 'positive' : 'negative';
+
+                segmentCard.innerHTML = `
+                    <div class="segment-header">
+                        <div class="segment-title">${segment.name}</div>
+                        <div class="segment-count">${segment.count}</div>
+                    </div>
+                    <div class="segment-stats">
+                        <div class="segment-stat">
+                            <div class="value ${growthClass}">
+                                <i class="fas fa-arrow-${segment.growth.startsWith('+') ? 'up' : 'down'}"></i>
+                                ${segment.growth}
+                            </div>
+                            <div class="label">Growth</div>
+                        </div>
+                        <div class="segment-stat">
+                            <div class="value">${segment.sessions}</div>
+                            <div class="label">Avg. Sessions</div>
+                        </div>
+                        <div class="segment-stat">
+                            <div class="value">${segment.engagement}</div>
+                            <div class="label">Engagement</div>
+                        </div>
+                    </div>
+                `;
+
+                segmentsGrid.appendChild(segmentCard);
+
+                // Add click event
+                segmentCard.addEventListener('click', function () {
+                    showSegmentDetails(segment);
+                });
+            });
+        }
+
+        // ===== USERS TABLE INITIALIZATION =====
+        function initializeUsersTable() {
+            const tableBody = document.getElementById('usersTableBody');
+            if (!tableBody) return;
+
+            tableBody.innerHTML = '';
+
+            usersData.userActivity.forEach(user => {
+                const row = document.createElement('tr');
+
+                const statusClass = user.status === 'active' ? 'active' :
+                    user.status === 'new' ? 'new' :
+                        user.status === 'vip' ? 'vip' : 'inactive';
+
+                const activityIcon = getActivityIcon(user.activity);
+
+                row.innerHTML = `
+                    <td>
+                        <div class="user-cell">
+                            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=3b82f6&color=fff" class="user-avatar" alt="${user.name}">
+                            <div class="user-info">
+                                <h4>${user.name}</h4>
+                                <p>${user.email}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="status ${statusClass}">${user.status.charAt(0).toUpperCase() + user.status.slice(1)}</span></td>
+                    <td>${user.lastActive}</td>
+                    <td>
+                        <div class="activity-type">
+                            ${activityIcon}
+                            <span>${user.activity}</span>
+                        </div>
+                    </td>
+                    <td><strong>${user.sessions}</strong></td>
+                    <td><strong>${user.engagement}</strong></td>
+                    <td>
+                        <button class="filter-btn" onclick="viewUserDetails(${user.id})" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        // ===== COUNTRIES INITIALIZATION =====
+        function initializeCountries() {
+            const geoList = document.querySelector('.geo-list');
+            if (geoList) {
+                usersData.countries.forEach(country => {
+                    const geoItem = document.createElement('div');
+                    geoItem.className = 'geo-item';
+
+                    geoItem.innerHTML = `
+                        <div class="country">
+                            <img src="https://flagcdn.com/w20/${country.code.toLowerCase()}.png" class="country-flag" alt="${country.name}">
+                            <span>${country.name}</span>
+                        </div>
+                        <div class="users-count">${country.users.toLocaleString()}</div>
+                    `;
+
+                    geoList.appendChild(geoItem);
+                });
+            }
+
+            // Regional engagement
+            const regionalEngagement = document.getElementById('regionalEngagement');
+            if (regionalEngagement) {
+                regionalEngagement.innerHTML = `
+                    <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                        ${usersData.distribution.labels.map((region, index) => `
+                            <div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem; font-size: 0.875rem;">
+                                    <span>${region}</span>
+                                    <span style="font-weight: 600;">${usersData.distribution.data[index]}%</span>
+                                </div>
+                                <div style="height: 6px; background: var(--bg-primary); border-radius: 3px; overflow: hidden;">
+                                    <div style="height: 100%; width: ${usersData.distribution.data[index]}%; background: var(--primary); border-radius: 3px;"></div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+        }
+
+        // ===== TOP USERS INITIALIZATION =====
+        function initializeTopUsers() {
+            // Most Active Users
+            const mostActiveUsers = document.getElementById('mostActiveUsers');
+            if (mostActiveUsers) {
+                usersData.topActiveUsers.forEach((user, index) => {
+                    const userElement = document.createElement('div');
+                    userElement.className = 'top-user';
+
+                    userElement.innerHTML = `
+                        <div class="user-rank rank-${index + 1}">${index + 1}</div>
+                        <div class="user-details">
+                            <div class="user-name">${user.name}</div>
+                            <div class="user-email">${user.email}</div>
+                        </div>
+                        <div class="user-stats">
+                            <div class="user-value">${user.sessions} sessions</div>
+                            <div class="user-label">${user.engagement} engagement</div>
+                        </div>
+                    `;
+
+                    mostActiveUsers.appendChild(userElement);
+                });
+            }
+
+            // Highest Value Users
+            const highestValueUsers = document.getElementById('highestValueUsers');
+            if (highestValueUsers) {
+                usersData.topValueUsers.forEach((user, index) => {
+                    const userElement = document.createElement('div');
+                    userElement.className = 'top-user';
+
+                    userElement.innerHTML = `
+                        <div class="user-rank rank-${index + 1}">${index + 1}</div>
+                        <div class="user-details">
+                            <div class="user-name">${user.name}</div>
+                            <div class="user-email">${user.email}</div>
+                        </div>
+                        <div class="user-stats">
+                            <div class="user-value">${user.value}</div>
+                            <div class="user-label">${user.purchases} purchases</div>
+                        </div>
+                    `;
+
+                    highestValueUsers.appendChild(userElement);
+                });
+            }
+        }
+
+        // ===== EVENT LISTENERS =====
+        function initializeEventListeners() {
+            // Date Range Filter
+            const dateRange = document.getElementById('dateRange');
+            if (dateRange) {
+                dateRange.addEventListener('change', function () {
+                    updateDashboardData(this.value);
+                    showNotification('Date range updated', `Showing user data for ${this.options[this.selectedIndex].text}`);
+                });
+            }
+
+            // Chart Metric Buttons
+            document.querySelectorAll('.chart-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const chartContainer = this.closest('.chart-container');
+                    const metric = this.dataset.metric;
+
+                    chartContainer.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    if (chartContainer.querySelector('#growthChart')) {
+                        updateGrowthChart(metric);
+                    } else {
+                        updateDistributionChart(metric);
+                    }
+                });
+            });
+
+            // User Filter Buttons
+            document.querySelectorAll('.filter-btn[data-status]').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.filter-btn[data-status]').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const status = this.dataset.status;
+                    filterUsersTable(status);
+                });
+            });
+
+            // Add User Button
+            const addUserBtn = document.getElementById('addUserBtn');
+            if (addUserBtn) {
+                addUserBtn.addEventListener('click', function () {
+                    showAddUserModal();
+                });
+            }
+
+            // Other buttons
+            document.getElementById('segmentAnalysisBtn')?.addEventListener('click', () => {
+                showNotification('Segment Analysis', 'Analyzing user segments...');
+            });
+
+            document.getElementById('exportUsersBtn')?.addEventListener('click', () => {
+                showNotification('Export Data', 'Exporting user data...');
+            });
+
+            // Search Functionality
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function () {
+                    searchUsers(this.value);
+                });
+            }
+
+            // Notification button
+            const notificationBtn = document.getElementById('notificationBtn');
+            if (notificationBtn) {
+                notificationBtn.addEventListener('click', () => {
+                    // Clear notifications
+                    const badge = document.getElementById('notificationBadge');
+                    if (badge) {
+                        badge.textContent = '0';
+                    }
+                    showNotification('Notifications', 'You have no new notifications');
+                });
+            }
+        }
+
+        // ===== CHART UPDATES =====
+        function updateGrowthChart(metric) {
+            const chart = window.growthChart;
+            if (!chart) return;
+
+            let newData, label, prefix = '';
+
+            switch (metric) {
+                case 'users':
+                    newData = usersData.growthTrend.users;
+                    label = 'Total Users';
+                    break;
+                case 'sessions':
+                    newData = usersData.growthTrend.sessions;
+                    label = 'Sessions';
+                    break;
+                case 'engagement':
+                    newData = usersData.growthTrend.engagement;
+                    label = 'Engagement Rate';
+                    prefix = '%';
+                    break;
+                default:
+                    return;
+            }
+
+            chart.data.datasets[0].data = newData;
+            chart.data.datasets[0].label = label;
+            chart.options.scales.y.ticks.callback = function (value) {
+                return value.toLocaleString() + prefix;
+            };
+            chart.update();
+        }
+
+        function updateDistributionChart(metric) {
+            // For simplicity, we'll just update the tooltip
+            const chart = window.distributionChart;
+            if (!chart) return;
+
+            if (metric === 'device') {
+                // Update to device distribution
+                chart.data.labels = ['Mobile', 'Desktop', 'Tablet', 'Other'];
+                chart.data.datasets[0].data = [62, 35, 3, 0];
+                chart.data.datasets[0].backgroundColor = ['#3b82f6', '#10b981', '#f59e0b', '#6b7280'];
+            } else {
+                // Update to region distribution
+                chart.data.labels = usersData.distribution.labels;
+                chart.data.datasets[0].data = usersData.distribution.data;
+                chart.data.datasets[0].backgroundColor = usersData.distribution.colors;
+            }
+
+            chart.update();
+        }
+
+        // ===== USER FUNCTIONS =====
+        function viewUserDetails(userId) {
+            const user = usersData.userActivity.find(u => u.id === userId);
+            if (!user) return;
+
+            const modalHtml = `
+                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;">
+                    <div style="background: var(--bg-card); border-radius: var(--radius); padding: 2rem; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-xl);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3 style="margin: 0;">User Details</h3>
+                            <button onclick="this.closest('div[style*=\\'position: fixed\\']').remove()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=3b82f6&color=fff" style="width: 60px; height: 60px; border-radius: 50%;">
+                                <div>
+                                    <h4 style="margin: 0 0 0.25rem 0;">${user.name}</h4>
+                                    <p style="margin: 0; color: var(--text-secondary);">${user.email}</p>
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Status</div>
+                                    <div><span class="status ${user.status}">${user.status.charAt(0).toUpperCase() + user.status.slice(1)}</span></div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Last Active</div>
+                                    <div>${user.lastActive}</div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.75rem;">Recent Activity</div>
+                                <div style="background: var(--bg-primary); border-radius: var(--radius-sm); padding: 1rem;">
+                                    <div style="display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 0;">
+                                        ${getActivityIcon(user.activity)}
+                                        <div>
+                                            <div style="font-weight: 600;">${user.activity}</div>
+                                            <div style="font-size: 0.75rem; color: var(--text-secondary);">${user.lastActive}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                                <div style="text-align: center; padding: 1rem; background: var(--bg-primary); border-radius: var(--radius-sm);">
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">${user.sessions}</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Total Sessions</div>
+                                </div>
+                                <div style="text-align: center; padding: 1rem; background: var(--bg-primary); border-radius: var(--radius-sm);">
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">${user.engagement}</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Engagement Rate</div>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                                <button onclick="sendMessageToUser(${user.id})" style="flex: 1; padding: 0.75rem; background: var(--primary); color: white; border: none; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem;">
+                                    <i class="fas fa-envelope"></i> Send Message
+                                </button>
+                                <button onclick="editUserProfile(${user.id})" style="flex: 1; padding: 0.75rem; background: var(--secondary); color: white; border: none; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem;">
+                                    <i class="fas fa-edit"></i> Edit Profile
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        function showAddUserModal() {
+            const modalHtml = `
+                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;">
+                    <div style="background: var(--bg-card); border-radius: var(--radius); padding: 2rem; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-xl);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3 style="margin: 0;">Add New User</h3>
+                            <button onclick="this.closest('div[style*=\\'position: fixed\\']').remove()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+                        </div>
+                        
+                        <form id="addUserForm" style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div>
+                                <label style="display: block; font-size: 0.875rem; margin-bottom: 0.5rem; color: var(--text-secondary);">Full Name</label>
+                                <input type="text" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary); color: var(--text-primary);">
+                            </div>
+                            
+                            <div>
+                                <label style="display: block; font-size: 0.875rem; margin-bottom: 0.5rem; color: var(--text-secondary);">Email Address</label>
+                                <input type="email" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary); color: var(--text-primary);">
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <label style="display: block; font-size: 0.875rem; margin-bottom: 0.5rem; color: var(--text-secondary);">User Role</label>
+                                    <select required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary); color: var(--text-primary);">
+                                        <option value="user">Regular User</option>
+                                        <option value="vip">VIP User</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="display: block; font-size: 0.875rem; margin-bottom: 0.5rem; color: var(--text-secondary);">Status</label>
+                                    <select required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); background: var(--bg-primary); color: var(--text-primary);">
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                        <option value="new">New</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" style="padding: 0.75rem; background: var(--primary); color: white; border: none; border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; font-size: 0.875rem; margin-top: 1rem;">
+                                Add User
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+            // Handle form submission
+            const form = document.getElementById('addUserForm');
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    addNewUser(this);
+                });
+            }
+        }
+
+        function addNewUser(form) {
+            const name = form.querySelector('input[type="text"]').value;
+            const email = form.querySelector('input[type="email"]').value;
+
+            // Create new user
+            const newUser = {
+                id: usersData.userActivity.length + 1,
+                name: name,
+                email: email,
+                status: "new",
+                lastActive: "Just now",
+                activity: "Account Created",
+                sessions: 1,
+                engagement: "0%"
+            };
+
+            // Add to beginning of array
+            usersData.userActivity.unshift(newUser);
+
+            // Update table
+            initializeUsersTable();
+
+            // Update metrics
+            updateUserMetrics();
+
+            // Close modal
+            const modal = document.querySelector('div[style*="position: fixed"]');
+            if (modal) {
+                modal.remove();
+            }
+            form.reset();
+
+            showNotification('User Added', `New user ${name} has been added successfully`);
+        }
+
+        function filterUsersTable(status) {
+            const rows = document.querySelectorAll('#usersTableBody tr');
+
+            rows.forEach(row => {
+                if (status === 'all') {
+                    row.style.display = '';
+                    return;
+                }
+
+                const statusCell = row.querySelector('.status');
+                if (statusCell && statusCell.classList.contains(status)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function searchUsers(query) {
+            const rows = document.querySelectorAll('#usersTableBody tr');
+            const searchTerm = query.toLowerCase().trim();
+
+            rows.forEach(row => {
+                if (!searchTerm) {
+                    row.style.display = '';
+                    return;
+                }
+
+                const name = row.querySelector('.user-info h4')?.textContent.toLowerCase() || '';
+                const email = row.querySelector('.user-info p')?.textContent.toLowerCase() || '';
+                const activity = row.querySelector('.activity-type span')?.textContent.toLowerCase() || '';
+
+                if (name.includes(searchTerm) ||
+                    email.includes(searchTerm) ||
+                    activity.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // ===== SEGMENT FUNCTIONS =====
+        function showSegmentDetails(segment) {
+            const modalHtml = `
+                <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 10000;">
+                    <div style="background: var(--bg-card); border-radius: var(--radius); padding: 2rem; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-xl);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h3 style="margin: 0;">${segment.name}</h3>
+                            <button onclick="this.closest('div[style*=\\'position: fixed\\']').remove()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-secondary);">&times;</button>
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 3rem; font-weight: 700; color: var(--primary);">${segment.count}</div>
+                                <div style="color: var(--text-secondary);">Users in Segment</div>
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
+                                <div style="padding: 1rem; background: var(--bg-primary); border-radius: var(--radius-sm);">
+                                    <div style="font-size: 1.25rem; font-weight: 700; color: ${segment.growth.startsWith('+') ? 'var(--secondary)' : 'var(--danger)'};">${segment.growth}</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Growth</div>
+                                </div>
+                                <div style="padding: 1rem; background: var(--bg-primary); border-radius: var(--radius-sm);">
+                                    <div style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">${segment.sessions}</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Avg. Sessions</div>
+                                </div>
+                                <div style="padding: 1rem; background: var(--bg-primary); border-radius: var(--radius-sm);">
+                                    <div style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">${segment.engagement}</div>
+                                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Engagement</div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.75rem;">Segment Description</div>
+                                <div style="background: var(--bg-primary); border-radius: var(--radius-sm); padding: 1rem; font-size: 0.875rem; line-height: 1.5;">
+                                    This segment consists of users who ${getSegmentDescription(segment.name.toLowerCase())}
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                                <button onclick="analyzeSegment(${segment.id})" style="flex: 1; padding: 0.75rem; background: var(--primary); color: white; border: none; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem;">
+                                    <i class="fas fa-chart-line"></i> Analyze
+                                </button>
+                                <button onclick="exportSegment(${segment.id})" style="flex: 1; padding: 0.75rem; background: var(--secondary); color: white; border: none; border-radius: var(--radius-sm); cursor: pointer; font-size: 0.875rem;">
+                                    <i class="fas fa-download"></i> Export
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        // ===== DASHBOARD UPDATES =====
+        function updateDashboardData(timeRange) {
+            // Simulate data update based on time range
+            const multiplier = timeRange === 'today' ? 0.03 :
+                timeRange === 'week' ? 0.25 :
+                    timeRange === 'month' ? 1 :
+                        timeRange === 'quarter' ? 3 : 12;
+
+            // Update metric cards
+            const metrics = [
+                { id: 'totalUsersValue', base: 28412, isNumber: true },
+                { id: 'activeUsersValue', base: 8245, isNumber: true },
+                { id: 'growthRateValue', base: 18.7, isPercent: true },
+                { id: 'engagementValue', base: 42, isPercent: true }
+            ];
+
+            metrics.forEach(metric => {
+                const element = document.getElementById(metric.id);
+                if (element) {
+                    const newValue = metric.base * multiplier;
+                    let displayValue;
+
+                    if (metric.isPercent) {
+                        displayValue = newValue.toFixed(1) + '%';
+                    } else if (metric.isNumber) {
+                        displayValue = Math.round(newValue).toLocaleString();
+                    }
+
+                    animateMetricChange(element, displayValue);
+                }
+            });
+        }
+
+        function updateUserMetrics() {
+            // Update user metrics based on new data
+            const totalUsers = document.getElementById('totalUsersValue');
+            if (totalUsers) {
+                totalUsers.textContent = (usersData.userActivity.length * 2841).toLocaleString();
+                totalUsers.classList.add('updated');
+                setTimeout(() => totalUsers.classList.remove('updated'), 1000);
+            }
+        }
+
+        function animateMetricChange(element, newValue) {
+            element.style.transform = 'scale(1.1)';
+            element.style.color = 'var(--primary)';
+
+            setTimeout(() => {
+                element.textContent = newValue;
+                element.style.transform = 'scale(1)';
+
+                setTimeout(() => {
+                    element.style.color = '';
+                }, 500);
+            }, 300);
+        }
+
+        // ===== REAL-TIME UPDATES =====
+        function initializeRealTimeUpdates() {
+            // Update metrics every 30 seconds
+            setInterval(() => {
+                updateLiveMetrics();
+            }, 30000);
+
+            // Simulate new user activity
+            setInterval(() => {
+                simulateUserActivity();
+            }, 45000);
+        }
+
+        function updateLiveMetrics() {
+            // Update random metric
+            const metrics = ['totalUsersValue', 'activeUsersValue', 'growthRateValue', 'engagementValue'];
+            const randomMetric = metrics[Math.floor(Math.random() * metrics.length)];
+            const element = document.getElementById(randomMetric);
+
+            if (element) {
+                const current = element.textContent;
+                let newValue;
+
+                if (randomMetric.includes('Value')) {
+                    if (randomMetric.includes('Rate') || randomMetric.includes('engagement')) {
+                        const currentNum = parseFloat(current);
+                        const variation = (Math.random() * 2 - 1); // ±1%
+                        newValue = Math.max(10, currentNum + variation).toFixed(1) + '%';
+                    } else {
+                        const currentNum = parseInt(current.replace(/,/g, ''));
+                        const variation = Math.floor(currentNum * 0.01); // ±1%
+                        newValue = (currentNum + Math.floor(Math.random() * variation * 2 - variation)).toLocaleString();
+                    }
+
+                    element.textContent = newValue;
+                    element.classList.add('updated');
+                    setTimeout(() => element.classList.remove('updated'), 1000);
+                }
+            }
+
+            // Occasionally update a user
+            if (Math.random() > 0.7) {
+                updateRandomUser();
+            }
+        }
+
+        function simulateUserActivity() {
+            // Randomly update a user's last active time
+            const activeUsers = usersData.userActivity.filter(u => u.status === 'active' || u.status === 'vip');
+            if (activeUsers.length > 0) {
+                const randomUser = activeUsers[Math.floor(Math.random() * activeUsers.length)];
+
+                // Update last active time
+                const times = ['5 minutes ago', '15 minutes ago', '1 hour ago', '2 hours ago'];
+                randomUser.lastActive = times[Math.floor(Math.random() * times.length)];
+
+                // Update sessions count
+                randomUser.sessions += Math.floor(Math.random() * 3);
+
+                // Update activity
+                const activities = ['Viewed Dashboard', 'Updated Profile', 'Posted Comment', 'Liked Content', 'Shared Post'];
+                randomUser.activity = activities[Math.floor(Math.random() * activities.length)];
+
+                // Update the table if this user is visible
+                const userRow = document.querySelector(`tr[data-user-id="${randomUser.id}"]`);
+                if (userRow) {
+                    const lastActiveCell = userRow.querySelector('td:nth-child(3)');
+                    const activityCell = userRow.querySelector('td:nth-child(4) span');
+                    const sessionsCell = userRow.querySelector('td:nth-child(5) strong');
+
+                    if (lastActiveCell) lastActiveCell.textContent = randomUser.lastActive;
+                    if (activityCell) activityCell.textContent = randomUser.activity;
+                    if (sessionsCell) sessionsCell.textContent = randomUser.sessions;
+
+                    userRow.style.backgroundColor = 'var(--bg-primary)';
+                    setTimeout(() => {
+                        userRow.style.backgroundColor = '';
+                    }, 1000);
+                }
+            }
+        }
+
+        function updateRandomUser() {
+            const users = document.querySelectorAll('#usersTableBody tr');
+            if (users.length > 0) {
+                const randomUser = users[Math.floor(Math.random() * users.length)];
+                randomUser.style.boxShadow = '0 0 0 2px var(--primary)';
+
+                setTimeout(() => {
+                    randomUser.style.boxShadow = '';
+                }, 1000);
+            }
+        }
+
+        // ===== NOTIFICATION SYSTEM =====
+        function showNotification(title, message = '') {
+            // Update badge
+            const badge = document.getElementById('notificationBadge');
+            if (badge) {
+                const current = parseInt(badge.textContent) || 0;
+                badge.textContent = current + 1;
+            }
+
+            // Create toast
+            const toast = document.createElement('div');
+            toast.className = 'notification-toast';
+            toast.innerHTML = `
+                <div class="toast-header">
+                    <i class="fas fa-users" style="color: var(--primary);"></i>
+                    <strong>${title}</strong>
+                    <button class="toast-close">&times;</button>
+                </div>
+                ${message ? `<div class="toast-body">${message}</div>` : ''}
+            `;
+
+            document.body.appendChild(toast);
+
+            // Close button
+            toast.querySelector('.toast-close').addEventListener('click', () => {
+                toast.remove();
+            });
+
+            // Auto-remove
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 5000);
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+        function getActivityIcon(activity) {
+            const icons = {
+                'Purchased Item': '<i class="fas fa-shopping-cart" style="color: var(--secondary);"></i>',
+                'Viewed Profile': '<i class="fas fa-eye" style="color: var(--primary);"></i>',
+                'Signed Up': '<i class="fas fa-user-plus" style="color: var(--secondary);"></i>',
+                'Premium Upgrade': '<i class="fas fa-crown" style="color: var(--warning);"></i>',
+                'Posted Review': '<i class="fas fa-star" style="color: var(--warning);"></i>',
+                'Shared Content': '<i class="fas fa-share" style="color: var(--primary);"></i>',
+                'Completed Onboarding': '<i class="fas fa-check-circle" style="color: var(--secondary);"></i>',
+                'Referred Friend': '<i class="fas fa-user-friends" style="color: var(--secondary);"></i>',
+                'Updated Settings': '<i class="fas fa-cog" style="color: var(--text-secondary);"></i>',
+                'Downloaded App': '<i class="fas fa-download" style="color: var(--primary);"></i>',
+                'Account Created': '<i class="fas fa-user-plus" style="color: var(--secondary);"></i>'
+            };
+
+            return icons[activity] || '<i class="fas fa-circle" style="color: var(--text-secondary);"></i>';
+        }
+
+        function getSegmentDescription(segmentName) {
+            const descriptions = {
+                'power users': 'are highly engaged, using the platform daily and contributing significantly to community activity.',
+                'regular users': 'use the platform consistently but may not engage with all features.',
+                'new users': 'have recently joined and are in the onboarding phase.',
+                'at risk': 'have shown declining engagement and may churn soon.',
+                'vip users': 'are high-value customers with premium subscriptions and frequent purchases.',
+                'inactive': 'have not engaged with the platform in over 30 days.'
+            };
+
+            return descriptions[segmentName] || 'have specific behavioral patterns that define this segment.';
+        }
+
+        // ===== GLOBAL FUNCTIONS =====
+        window.viewUserDetails = viewUserDetails;
+        window.sendMessageToUser = function (userId) {
+            showNotification('Message Sent', 'Message has been sent to the user');
+        };
+
+        window.editUserProfile = function (userId) {
+            showNotification('Edit Profile', 'Opening user profile editor...');
+        };
+
+        window.analyzeSegment = function (segmentId) {
+            showNotification('Segment Analysis', 'Analyzing user segment patterns...');
+        };
+
+        window.exportSegment = function (segmentId) {
+            showNotification('Export Segment', 'Exporting segment data...');
+        };
+    </script>
+</body>
+
+</html>

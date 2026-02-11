@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataViz Pro | Analytics Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="popup.css">
+    <link rel="icon" type="image/x-icon" href="assets\icons\chart-title.svg">
+</head>
+
+<body>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <button id="themeBtn" class="theme-btn">
+            <i class="fas fa-moon"></i>
+            <span>Dark Mode</span>
+        </button>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <h1>DataViz Pro</h1>
+            </div>
+
+            <nav class="nav-menu">
+                <ul>
+                    <li class="active">
+                        <a href="index.html">
+                            <i class="fas fa-home"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Analytics.html">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Analytics</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Sales.html">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Sales</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Users.html">
+                            <i class="fas fa-users"></i>
+                            <span>Users</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Marketing.html">
+                            <i class="fas fa-bullhorn"></i>
+                            <span>Marketing</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Settings.html">
+                            <i class="fas fa-cog"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Alerts.html">
+                            <i class="fas fa-bell"></i>
+                            <span>Alerts</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="Reports.html">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Reports</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Windows Start Button - Added at bottom of sidebar -->
+            <div class="sidebar-footer">
+                <button class="windows-start-btn" id="windowsStartBtn">
+                    <div class="user-avatar-small">JD</div>
+                    <div class="user-info-small">
+                        <span class="user-name-small">John Doe</span>
+                        <span class="user-status-small">Online</span>
+                    </div>
+                    <i class="fas fa-chevron-up"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div class="header-left">
+                    <h2>Dashboard Overview</h2>
+                    <p class="subtitle">Welcome back! Here's what's happening today.</p>
+                </div>
+
+                <div class="header-right">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search analytics...">
+                    </div>
+
+                    <div class="header-actions">
+                        <!-- Updated Notification Button with Dropdown -->
+                        <div class="notification-dropdown">
+                            <button class="notification-btn" id="notificationToggle">
+                                <i class="fas fa-bell"></i>
+                                <span class="notification-badge" id="notificationCount">3</span>
+                            </button>
+
+                            <div class="notification-panel" id="notificationPanel">
+                                <div class="notification-header">
+                                    <h4>Notifications</h4>
+                                    <button class="mark-all-read" onclick="markAllNotificationsAsRead()">
+                                        Mark all as read
+                                    </button>
+                                </div>
+                                <div class="notification-list" id="notificationList">
+                                    <!-- Notifications will load here dynamically -->
+                                    <div class="notification-empty">
+                                        <i class="fas fa-bell-slash"></i>
+                                        <p>No new notifications</p>
+                                    </div>
+                                </div>
+                                <div class="notification-footer">
+                                    <a href="Alerts.html">View all notifications</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="date-filter">
+                            <select id="dateRange">
+                                <option value="7d">Last 7 days</option>
+                                <option value="30d" selected>Last 30 days</option>
+                                <option value="90d">Last 90 days</option>
+                                <option value="1y">Last year</option>
+                            </select>
+                        </div>
+
+                        <button class="export-btn" id="exportBtn">
+                            <i class="fas fa-download"></i>
+                            Export
+                        </button>
+
+                        <!-- Alternative User Profile Button in Header -->
+                        <button class="user-profile-btn" id="userProfileBtn">
+                            <div class="user-avatar">JD</div>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- KPI Cards -->
+            <section class="kpi-grid">
+                <div class="kpi-card revenue">
+                    <div class="kpi-header">
+                        <h3>Total Revenue</h3>
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="kpi-value" id="revenueValue">$124,580</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>12.5% from last month</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card orders">
+                    <div class="kpi-header">
+                        <h3>Total Orders</h3>
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="kpi-value" id="ordersValue">1,842</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>8.2% from last month</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card users">
+                    <div class="kpi-header">
+                        <h3>Active Users</h3>
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="kpi-value" id="usersValue">2,841</div>
+                    <div class="kpi-change positive">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>5.7% from last month</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card conversion">
+                    <div class="kpi-header">
+                        <h3>Conversion Rate</h3>
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="kpi-value" id="conversionValue">3.2%</div>
+                    <div class="kpi-change negative">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>1.1% from last month</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <!-- Sales Chart -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Sales Overview</h3>
+                        <div class="chart-actions">
+                            <button class="chart-btn active" data-type="revenue">Revenue</button>
+                            <button class="chart-btn" data-type="orders">Orders</button>
+                            <button class="chart-btn" data-type="profit">Profit</button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Top Products -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Top Products</h3>
+                        <select id="productFilter">
+                            <option value="revenue">By Revenue</option>
+                            <option value="units">By Units Sold</option>
+                        </select>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="productsChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data Table & Map Section -->
+            <section class="data-section">
+                <!-- Recent Orders Table -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3>Recent Orders</h3>
+                        <a href="#" class="view-all">View All</a>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="ordersTable">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Data will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- User Geography -->
+                <div class="map-container">
+                    <div class="chart-header">
+                        <h3>User Geography</h3>
+                        <div class="legend">
+                            <span class="legend-item"><i class="fas fa-circle high"></i> High</span>
+                            <span class="legend-item"><i class="fas fa-circle medium"></i> Medium</span>
+                            <span class="legend-item"><i class="fas fa-circle low"></i> Low</span>
+                        </div>
+                    </div>
+                    <div class="map-wrapper">
+                        <div class="world-map">
+                            <!-- Simple SVG map representation -->
+                            <svg viewBox="0 0 800 400" id="worldMap">
+                                <!-- Continents will be drawn by JavaScript -->
+                            </svg>
+                        </div>
+                        <div class="country-list" id="countryList">
+                            <!-- Country data will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bottom Stats -->
+            <section class="stats-section">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h4>Mobile Traffic</h4>
+                        <div class="stat-value">62%</div>
+                        <div class="stat-change positive">+5%</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-desktop"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h4>Desktop Traffic</h4>
+                        <div class="stat-value">38%</div>
+                        <div class="stat-change negative">-3%</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h4>Avg. Session</h4>
+                        <div class="stat-value">4m 32s</div>
+                        <div class="stat-change positive">+12s</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-redo"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h4>Bounce Rate</h4>
+                        <div class="stat-value">34%</div>
+                        <div class="stat-change negative">-2%</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <!-- ==================== -->
+    <!-- WINDOWS START POPUP  -->
+    <!-- ==================== -->
+
+    <!-- Overlay -->
+    <div class="popup-overlay" id="popupOverlay"></div>
+
+    <!-- Windows Start Menu Popup -->
+    <div class="windows-popup" id="windowsPopup">
+        <!-- User Header -->
+        <div class="popup-user-header">
+            <div class="popup-user-avatar">JD</div>
+            <div class="popup-user-info">
+                <h3>John Doe</h3>
+                <p class="user-role">Administrator</p>
+            </div>
+            <!-- Theme Toggle in Popup -->
+            <button class="popup-theme-toggle" id="popupThemeToggle" title="Toggle Theme">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+
+        <!-- Pinned Section -->
+        <div class="popup-section">
+            <h4 class="section-title">PINNED</h4>
+            <div class="pinned-grid">
+                <button class="pinned-item">
+                    <span class="item-icon">👤</span>
+                    <span class="item-name">Profile</span>
+                </button>
+                <button class="pinned-item">
+                    <span class="item-icon">⚙️</span>
+                    <span class="item-name">Settings</span>
+                </button>
+                <button class="pinned-item">
+                    <span class="item-icon">📧</span>
+                    <span class="item-name">Mail</span>
+                </button>
+                <button class="pinned-item">
+                    <span class="item-icon">📁</span>
+                    <span class="item-name">Files</span>
+                </button>
+                <button class="pinned-item">
+                    <span class="item-icon">🌐</span>
+                    <span class="item-name">Browser</span>
+                </button>
+                <button class="pinned-item">
+                    <span class="item-icon">🎨</span>
+                    <span class="item-name">Design</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Financial Stats -->
+        <div class="popup-section">
+            <h4 class="section-title">Earnings</h4>
+            <div class="financial-stats">
+                <div class="current-month">
+                    <span class="amount">$20,000</span>
+                    <span class="month">Current</span>
+                </div>
+                <div class="earnings-list">
+                    <div class="earning-item">$18,000</div>
+                    <div class="earning-item">$16,000</div>
+                    <div class="earning-item">$14,000</div>
+                    <div class="earning-item">$12,000</div>
+                    <div class="earning-item">$10,000</div>
+                    <div class="earning-item">$8,000</div>
+                    <div class="earning-item">$6,000</div>
+                    <div class="earning-item">$4,000</div>
+                    <div class="earning-item">$2,000</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommended Section -->
+        <div class="popup-section">
+            <h4 class="section-title">RECOMMENDED</h4>
+            <div class="recommended-item">
+                <span class="rec-icon">📄</span>
+                <div class="rec-details">
+                    <span class="rec-title">Quarterly Report</span>
+                    <span class="rec-time">Today</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="popup-actions">
+            <button class="action-btn">
+                <span class="action-icon">👤</span>
+                <span>Account</span>
+            </button>
+            <button class="action-btn">
+                <span class="action-icon">🔒</span>
+                <span>Lock</span>
+            </button>
+            <button class="action-btn">
+                <span class="action-icon">🚪</span>
+                <span>Sign out</span>
+            </button>
+            <button class="action-btn">
+                <span class="action-icon">⏻</span>
+                <span>Shut down</span>
+            </button>
+        </div>
+
+        <!-- Close Button -->
+        <button class="popup-close-btn" id="popupCloseBtn">&times;</button>
+    </div>
+
+    <!-- ==================== -->
+    <!-- END POPUP SECTION    -->
+    <!-- ==================== -->
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Mock Data -->
+    <script src="data/mock-data.js"></script>
+
+    <!-- Main JavaScript -->
+    <script src="script.js"></script>
+
+    <!-- Popup JavaScript -->
+    <script src="popup.js"></script>
+</body>
+
+</html>

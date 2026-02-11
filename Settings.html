@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Settings</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .settings-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 800px;
+            overflow: hidden;
+        }
+
+        .settings-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .settings-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .settings-header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .settings-content {
+            padding: 40px;
+        }
+
+        .settings-group {
+            margin-bottom: 40px;
+        }
+
+        .settings-group h2 {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info h3 {
+            color: #444;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .setting-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: #4CAF50;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Dropdown */
+        select {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            background: white;
+            color: #333;
+            font-size: 1rem;
+            cursor: pointer;
+            min-width: 200px;
+            transition: border-color 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Range Slider */
+        .range-slider {
+            width: 200px;
+            height: 6px;
+            appearance: none;
+            background: #ddd;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .range-value {
+            display: inline-block;
+            width: 40px;
+            text-align: center;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        /* Buttons */
+        .settings-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        /* Theme Options */
+        .theme-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .theme-option {
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .theme-option:hover {
+            border-color: #667eea;
+        }
+
+        .theme-option.active {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .theme-color {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            color: white;
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .quick-action-btn {
+            padding: 8px 15px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .quick-action-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .settings-container {
+                max-width: 100%;
+                margin: 20px;
+            }
+
+            .settings-content {
+                padding: 20px;
+            }
+
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .settings-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="settings-container">
+        <div class="settings-header">
+            <h1>⚙️ Project Settings</h1>
+            <p>Configure your project preferences</p>
+        </div>
+
+        <div class="settings-content">
+            <!-- General Settings -->
+            <div class="settings-group">
+                <h2>General Settings</h2>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Dark Mode</h3>
+                        <p>Enable dark theme for better night viewing</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="darkMode">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Auto-save</h3>
+                        <p>Automatically save your work every 5 minutes</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="autoSave" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Notifications</h3>
+                        <p>Receive desktop notifications</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="notifications" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Display Settings -->
+            <div class="settings-group">
+                <h2>Display & Interface</h2>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Theme Color</h3>
+                        <p>Choose your primary color scheme</p>
+                    </div>
+                    <div class="theme-options">
+                        <div class="theme-option active" data-theme="blue">
+                            <div class="theme-color" style="background: #667eea;"></div>
+                            <span>Blue</span>
+                        </div>
+                        <div class="theme-option" data-theme="green">
+                            <div class="theme-color" style="background: #4CAF50;"></div>
+                            <span>Green</span>
+                        </div>
+                        <div class="theme-option" data-theme="purple">
+                            <div class="theme-color" style="background: #9c27b0;"></div>
+                            <span>Purple</span>
+                        </div>
+                        <div class="theme-option" data-theme="orange">
+                            <div class="theme-color" style="background: #ff9800;"></div>
+                            <span>Orange</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Font Size</h3>
+                        <p>Adjust text size for better readability</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <input type="range" class="range-slider" id="fontSize" min="12" max="24" value="16">
+                        <span class="range-value" id="fontSizeValue">16px</span>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Language</h3>
+                        <p>Select your preferred language</p>
+                    </div>
+                    <select id="language">
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                        <option value="de">German</option>
+                        <option value="ja">Japanese</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Performance Settings -->
+            <div class="settings-group">
+                <h2>Performance</h2>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Hardware Acceleration</h3>
+                        <p>Use GPU for better performance (recommended)</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="hardwareAccel" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Cache Data</h3>
+                        <p>Store data locally for faster loading</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="cacheData" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Animations</h3>
+                        <p>Enable smooth transitions and animations</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="animations" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="settings-group">
+                <h2>Quick Actions</h2>
+                <div class="quick-actions">
+                    <button class="quick-action-btn" onclick="resetToDefaults()">Reset to Defaults</button>
+                    <button class="quick-action-btn" onclick="exportSettings()">Export Settings</button>
+                    <button class="quick-action-btn" onclick="importSettings()">Import Settings</button>
+                    <button class="quick-action-btn" onclick="clearCache()">Clear Cache</button>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="settings-buttons">
+                <button class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveBtn">Save & Go to Dashboard</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <h3>Saving Settings...</h3>
+        <p>Redirecting to Dashboard</p>
+    </div>
+
+    <script>
+        // DOM Elements
+        const saveBtn = document.getElementById('saveBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        // Theme selection
+        const themeOptions = document.querySelectorAll('.theme-option');
+        themeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                themeOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+            });
+        });
+
+        // Font size slider
+        const fontSizeSlider = document.getElementById('fontSize');
+        const fontSizeValue = document.getElementById('fontSizeValue');
+        fontSizeSlider.addEventListener('input', () => {
+            fontSizeValue.textContent = `${fontSizeSlider.value}px`;
+        });
+
+        // Save settings and redirect to YOUR dashboard
+        saveBtn.addEventListener('click', () => {
+            // Get all current settings values
+            const settings = {
+                darkMode: document.getElementById('darkMode').checked,
+                autoSave: document.getElementById('autoSave').checked,
+                notifications: document.getElementById('notifications').checked,
+                theme: document.querySelector('.theme-option.active').dataset.theme,
+                fontSize: fontSizeSlider.value,
+                language: document.getElementById('language').value,
+                hardwareAccel: document.getElementById('hardwareAccel').checked,
+                cacheData: document.getElementById('cacheData').checked,
+                animations: document.getElementById('animations').checked,
+                lastUpdated: new Date().toISOString()
+            };
+
+            // Show loading overlay
+            loadingOverlay.classList.add('active');
+
+            // Save to localStorage
+            localStorage.setItem('projectSettings', JSON.stringify(settings));
+
+            // Save to session for immediate use
+            sessionStorage.setItem('currentSettings', JSON.stringify(settings));
+
+            // Simulate save delay (in real app, this would be API call)
+            setTimeout(() => {
+                // ============================================
+                // IMPORTANT: CHANGE THIS TO YOUR DASHBOARD URL
+                // ============================================
+
+                // Option 1: If your dashboard is in the same folder
+                window.location.href = 'index.html'; // Your dashboard file name
+
+                // Option 2: If your dashboard has a different name
+                // window.location.href = 'dashboard.html';
+
+                // Option 3: If your dashboard is in a subfolder
+                // window.location.href = 'dashboard/index.html';
+
+                // Option 4: If you want to pass settings as URL parameters
+                // const params = new URLSearchParams(settings).toString();
+                // window.location.href = `dashboard.html?${params}`;
+
+                // Option 5: If you're using a different URL
+                // window.location.href = 'https://your-project-url.com';
+
+            }, 1500);
+        });
+
+        // Cancel button - go back to dashboard
+        cancelBtn.addEventListener('click', () => {
+            window.location.href = 'index.html'; // Change to your dashboard URL
+        });
+
+        // Quick action functions
+        function resetToDefaults() {
+            if (confirm('Reset all settings to default values?')) {
+                // Reset all toggles
+                document.getElementById('darkMode').checked = false;
+                document.getElementById('autoSave').checked = true;
+                document.getElementById('notifications').checked = true;
+                document.getElementById('hardwareAccel').checked = true;
+                document.getElementById('cacheData').checked = true;
+                document.getElementById('animations').checked = true;
+
+                // Reset theme
+                themeOptions.forEach(opt => opt.classList.remove('active'));
+                document.querySelector('[data-theme="blue"]').classList.add('active');
+
+                // Reset font size
+                fontSizeSlider.value = 16;
+                fontSizeValue.textContent = '16px';
+
+                // Reset language
+                document.getElementById('language').value = 'en';
+
+                alert('Settings reset to defaults!');
+            }
+        }
+
+        function exportSettings() {
+            const settings = {
+                darkMode: document.getElementById('darkMode').checked,
+                autoSave: document.getElementById('autoSave').checked,
+                theme: document.querySelector('.theme-option.active').dataset.theme,
+                fontSize: fontSizeSlider.value
+            };
+
+            const dataStr = JSON.stringify(settings, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+
+            const exportFileDefaultName = 'project-settings.json';
+
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+
+        function importSettings() {
+            alert('Import functionality would open a file dialog to load settings from a JSON file.');
+            // In a real implementation, you would:
+            // 1. Create file input element
+            // 2. Read the JSON file
+            // 3. Apply the settings
+        }
+
+        function clearCache() {
+            if (confirm('Clear all cached data? This will not affect your saved settings.')) {
+                // Clear localStorage except settings
+                const settings = localStorage.getItem('projectSettings');
+                localStorage.clear();
+                if (settings) {
+                    localStorage.setItem('projectSettings', settings);
+                }
+                alert('Cache cleared successfully!');
+            }
+        }
+
+        // Load saved settings on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedSettings = localStorage.getItem('projectSettings');
+
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+
+                // Apply saved settings
+                document.getElementById('darkMode').checked = settings.darkMode || false;
+                document.getElementById('autoSave').checked = settings.autoSave !== false; // Default true
+                document.getElementById('notifications').checked = settings.notifications !== false; // Default true
+                document.getElementById('hardwareAccel').checked = settings.hardwareAccel !== false; // Default true
+                document.getElementById('cacheData').checked = settings.cacheData !== false; // Default true
+                document.getElementById('animations').checked = settings.animations !== false; // Default true
+
+                // Apply theme
+                const themeElement = document.querySelector(`[data-theme="${settings.theme}"]`);
+                if (themeElement) {
+                    themeOptions.forEach(opt => opt.classList.remove('active'));
+                    themeElement.classList.add('active');
+                }
+
+                // Apply font size
+                if (settings.fontSize) {
+                    fontSizeSlider.value = settings.fontSize;
+                    fontSizeValue.textContent = `${settings.fontSize}px`;
+                }
+
+                // Apply language
+                if (settings.language) {
+                    document.getElementById('language').value = settings.language;
+                }
+            }
+
+            // Check if we came from dashboard
+            const fromDashboard = sessionStorage.getItem('fromDashboard');
+            if (fromDashboard === 'true') {
+                console.log('Came from dashboard');
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl+S or Cmd+S to save
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                saveBtn.click();
+            }
+
+            // Escape to cancel
+            if (e.key === 'Escape') {
+                cancelBtn.click();
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* User Info Popup - SOLID BACKGROUND */
+        .user-info-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            background: white;
+            /* SOLID WHITE */
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: none;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+
+        .user-info-popup.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -48%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        /* Header */
+        .popup-header {
+            padding: 25px;
+            background: linear-gradient(135deg, #0078d4, #005a9e);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-avatar-large {
+            width: 70px;
+            height: 70px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0078d4;
+            font-size: 28px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-main-info h2 {
+            margin: 0 0 5px 0;
+            font-size: 24px;
+        }
+
+        .user-role {
+            margin: 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* Sections */
+        .popup-section {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .popup-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            margin: 0 0 15px 0;
+            color: #333;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Pinned Items */
+        .pinned-items {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .pinned-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 80px;
+        }
+
+        .pinned-item:hover {
+            background: #e7f3ff;
+            border-color: #0078d4;
+            transform: translateY(-2px);
+        }
+
+        .item-icon {
+            font-size: 20px;
+            display: block;
+        }
+
+        .item-name {
+            font-size: 12px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* Financial Stats */
+        .financial-stats {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .stat-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            color: #0078d4;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        /* Progress Bars */
+        .progress-bars {
+            margin-top: 15px;
+        }
+
+        .progress-bar {
+            height: 24px;
+            background: linear-gradient(90deg, #0078d4, #00bcf2);
+            margin-bottom: 6px;
+            border-radius: 4px;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            transition: width 0.3s ease;
+            min-width: 40px;
+        }
+
+        /* Recommended Item */
+        .recommended-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .rec-icon {
+            font-size: 24px;
+            color: #0078d4;
+        }
+
+        .rec-details {
+            flex: 1;
+        }
+
+        .rec-title {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .rec-time {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Action Buttons */
+        .popup-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: #f0f0f0;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .action-btn {
+            background: white;
+            border: none;
+            padding: 15px 10px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            color: #333;
+            transition: all 0.2s;
+            font-size: 12px;
+        }
+
+        .action-btn:hover {
+            background: #f0f7ff;
+            color: #0078d4;
+        }
+
+        .action-icon {
+            font-size: 18px;
+        }
+
+        /* Close Button */
+        .close-popup-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .close-popup-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Overlay */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+
+        .popup-overlay.active {
+            display: block;
+        }
+
+        /* Trigger Button */
+        .open-popup-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+        }
+
+        .open-popup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .avatar-small {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #0078d4, #00bcf2);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .user-title {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Simple User Info Popup -->
+    <div class="user-info-popup" id="userInfoPopup">
+        <!-- User Header -->
+        <div class="popup-header">
+            <div class="user-avatar-large">JD</div>
+            <div class="user-main-info">
+                <h2>John Doe</h2>
+                <p class="user-role">Administrator</p>
+            </div>
+        </div>
+
+        <!-- PINNED Section -->
+        <div class="popup-section">
+            <h3 class="section-title">PINNED</h3>
+            <div class="pinned-items">
+                <button class="pinned-item">
+                    <span class="item-icon">👤</span>
+                    <span class="item-name">Profile</span>
+                </button>
+                <button class="pinned-item">
+                    <span class="item-icon">⚙️</span>
+                    <span class="item-name">Settings</span>
+                </button>
+                <button class="pinned-item">
+                    <span class="item-icon">📧</span>
+                    <span class="item-name">Mail</span>
+                </button>
+                <button class="pinned-item">
+                    <span class="item-icon">📁</span>
+                    <span class="item-name">Files</span>
+                </button>
+                <button class="pinned-item">
+                    <span class="item-icon">🌐</span>
+                    <span class="item-name">Browser</span>
+                </button>
+                <button class="pinned-item">
+                    <span class="item-icon">🎨</span>
+                    <span class="item-name">Design</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Financial Stats -->
+        <div class="popup-section">
+            <h3 class="section-title">Earnings</h3>
+            <div class="financial-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Current:</span>
+                    <span class="stat-value">$20,000</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Previous:</span>
+                    <span class="stat-value">$18,000</span>
+                </div>
+                <div class="progress-bars">
+                    <div class="progress-bar" style="width: 100%">$20,000</div>
+                    <div class="progress-bar" style="width: 90%">$18,000</div>
+                    <div class="progress-bar" style="width: 80%">$16,000</div>
+                    <div class="progress-bar" style="width: 70%">$14,000</div>
+                    <div class="progress-bar" style="width: 60%">$12,000</div>
+                    <div class="progress-bar" style="width: 50%">$10,000</div>
+                    <div class="progress-bar" style="width: 40%">$8,000</div>
+                    <div class="progress-bar" style="width: 30%">$6,000</div>
+                    <div class="progress-bar" style="width: 20%">$4,000</div>
+                    <div class="progress-bar" style="width: 10%">$2,000</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECOMMENDED Section -->
+        <div class="popup-section">
+            <h3 class="section-title">RECOMMENDED</h3>
+            <div class="recommended-item">
+                <span class="rec-icon">📄</span>
+                <div class="rec-details">
+                    <span class="rec-title">Quarterly Report</span>
+                    <span class="rec-time">Today</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="popup-actions">
+            <button class="action-btn">
+                <span class="action-icon">👤</span>
+                <span>Account</span>
+            </button>
+            <button class="action-btn">
+                <span class="action-icon">🔒</span>
+                <span>Lock</span>
+            </button>
+            <button class="action-btn">
+                <span class="action-icon">🚪</span>
+                <span>Sign out</span>
+            </button>
+            <button class="action-btn">
+                <span class="action-icon">⏻</span>
+                <span>Shut down</span>
+            </button>
+        </div>
+
+        <!-- Close Button -->
+        <button class="close-popup-btn" id="closePopupBtn">×</button>
+    </div>
+
+    <!-- Overlay -->
+    <div class="popup-overlay" id="popupOverlay"></div>
+
+    <!-- Trigger Button (can be your existing profile) -->
+    <button class="open-popup-btn" id="openPopupBtn">
+        <div class="avatar-small">JD</div>
+        <div class="user-info">
+            <span class="user-name">John Doe</span>
+            <span class="user-title">Admin</span>
+        </div>
+    </button>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const popup = document.getElementById('userInfoPopup');
+        const overlay = document.getElementById('popupOverlay');
+        const openBtn = document.getElementById('openPopupBtn');
+        const closeBtn = document.getElementById('closePopupBtn');
+        const actionBtns = document.querySelectorAll('.action-btn');
+        const pinnedItems = document.querySelectorAll('.pinned-item');
+
+        // Open popup
+        openBtn.addEventListener('click', function () {
+            popup.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        // Close popup
+        function closePopup() {
+            popup.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        closeBtn.addEventListener('click', closePopup);
+        overlay.addEventListener('click', closePopup);
+
+        // Close on Escape key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && popup.classList.contains('active')) {
+                closePopup();
+            }
+        });
+
+        // Action button handlers
+        actionBtns.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const action = this.textContent.trim();
+                alert(`${action} clicked`);
+
+                // Close popup for sign out and shutdown
+                if (action === 'Sign out' || action === 'Shut down') {
+                    closePopup();
+                }
+            });
+        });
+
+        // Pinned item handlers
+        pinnedItems.forEach(item => {
+            item.addEventListener('click', function () {
+                const itemName = this.querySelector('.item-name').textContent;
+                alert(`Opening ${itemName}`);
+            });
+        });
+
+        // Prevent closing when clicking inside popup
+        popup.addEventListener('click', function (e) {
+            e.stopPropagation();
+        });
+    });
+</script>
+
+</html>
